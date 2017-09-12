@@ -1,7 +1,7 @@
 # clp-cat
 A combination of clp-packet and ws-cat. Use it as a debug tool, to talk to clp-frog or to ilp-node
 
-![cat debugging a frog](http://i.imgur.com/6IVYUHo.jpg | width=100)
+<img width="452" alt="screen shot 2017-09-12 at 15 38 58" src="https://user-images.githubusercontent.com/408412/30328758-94b18b32-97d0-11e7-8a19-fddad31ea154.png">
 
 # Usage
 
