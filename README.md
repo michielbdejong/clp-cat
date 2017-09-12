@@ -1,7 +1,7 @@
 # clp-cat
 A combination of clp-packet and ws-cat. Use it as a debug tool, to talk to clp-frog or to ilp-node
 
-![cat debugging a frog](http://i.imgur.com/6IVYUHo.jpg =250x "Cat debugging a Frog")
+<img src="http://i.imgur.com/6IVYUHo.jpg" alt="Cat debugging a Frog" style="width: 100px;"/>
 
 # Usage
 
