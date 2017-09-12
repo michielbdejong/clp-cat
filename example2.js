@@ -29,24 +29,29 @@ Promise.all([
     cat2.start()
   ])
 }).then(() => {
-  const done = new Promise((resolve) => {
+  const done1 = new Promise((resolve) => {
     cat1.on('incoming', (obj, evalString) => {
-      console.log('cat1 incoming', evalString)
       if (obj.type === ClpPacket.TYPE_FULFILL) {
-        if (obj.data.fulfillment === fulfillment) {
+        if (fulfillment.compare(obj.data.fulfillment) === 0) {
           console.log('fulfillment ok')
           cat1.send({
             type: ClpPacket.TYPE_ACK,
             requestId: obj.requestId,
             data: []
           })
+          // note that Bob may already receive an ack from the ledger
+          // even before Alice receives this fulfill.
+          // Alice's Frog will ignore this Ack
+          console.log('cat1 ack')
+          resolve()
         } else {
           console.log('fulfillment not ok')
         }
       }
     })
+  })
+  const done2 = new Promise((resolve) => {
     cat2.on('incoming', (obj, evalString) => {
-      console.log('cat2 incoming', evalString)
       if (obj.type === ClpPacket.TYPE_PREPARE) {
         cat2.send({
           type: ClpPacket.TYPE_ACK,
@@ -57,18 +62,19 @@ Promise.all([
           type: ClpPacket.TYPE_FULFILL,
           requestId: 2,
           data: {
-            transferId: obj.transferId,
+            transferId: obj.data.transferId,
             fulfillment,
             protocolData: [] 
           }
         })
       }
       if (obj.type === ClpPacket.TYPE_ACK) {
+        console.log('cat2 ack')
         resolve()
       }
     })
   })
-  cat1.send({
+  return cat1.send({
     type: ClpPacket.TYPE_PREPARE,
     requestId: 1,
     data: {
@@ -93,9 +99,10 @@ Promise.all([
       ]
     }
   }).then(() => {
-   return done
+   return Promise.all([ done1, done2 ])
   })
 }).then(() => {
+  console.log('done')
    return Promise.all([
      frog1.stop(),
      cat1.stop(),

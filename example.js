@@ -13,39 +13,39 @@ frog.start().then(() => {
 }).then(() => {
   let responses = 0
   const requests = [
-    // {
-    //   type: ClpPacket.TYPE_MESSAGE,
-    //   requestId: 1,
-    //   data: [
-    //     {
-    //       protocolName: 'balance',
-    //       contentType: ClpPacket.MIME_APPLICATION_OCTET_STREAM,
-    //       data: Buffer.from([ 0 ])
-    //     }
-    //   ]
-    // },
-    // {
-    //   type: ClpPacket.TYPE_MESSAGE,
-    //   requestId: 2,
-    //   data: [
-    //     {
-    //       protocolName: 'info',
-    //       contentType: ClpPacket.MIME_APPLICATION_OCTET_STREAM,
-    //       data: Buffer.from([ 0 ])
-    //     }
-    //   ]
-    // },
-    // {
-    //   type: ClpPacket.TYPE_MESSAGE,
-    //   requestId: 3,
-    //   data: [
-    //     {
-    //       protocolName: 'info',
-    //       contentType: ClpPacket.MIME_APPLICATION_OCTET_STREAM,
-    //       data: Buffer.from([ 2 ])
-    //     }
-    //   ]
-    // },
+     {
+       type: ClpPacket.TYPE_MESSAGE,
+       requestId: 1,
+       data: [
+         {
+           protocolName: 'balance',
+           contentType: ClpPacket.MIME_APPLICATION_OCTET_STREAM,
+           data: Buffer.from([ 0 ])
+         }
+       ]
+     },
+     {
+       type: ClpPacket.TYPE_MESSAGE,
+       requestId: 2,
+       data: [
+         {
+           protocolName: 'info',
+           contentType: ClpPacket.MIME_APPLICATION_OCTET_STREAM,
+           data: Buffer.from([ 0 ])
+         }
+       ]
+     },
+     {
+       type: ClpPacket.TYPE_MESSAGE,
+       requestId: 3,
+       data: [
+         {
+           protocolName: 'info',
+           contentType: ClpPacket.MIME_APPLICATION_OCTET_STREAM,
+           data: Buffer.from([ 2 ])
+         }
+       ]
+     },
     {
       type: ClpPacket.TYPE_MESSAGE,
       requestId: 4,
@@ -53,8 +53,9 @@ frog.start().then(() => {
         {
           protocolName: 'ilp',
           contentType: ClpPacket.MIME_APPLICATION_OCTET_STREAM,
-          data: IlpPacket.serializeIlqpLiquidityRequest({
+          data: IlpPacket.serializeIlqpByDestinationRequest({
             destinationAccount: 'de.eur.blue.bob',
+            destinationAmount: '9000000000',
             destinationHoldDuration: 3000
           })
         },
@@ -69,7 +70,6 @@ frog.start().then(() => {
 
   const gotResponses = new Promise((resolve) => {
     cat.on('incoming', (obj, evalString) => {
-      console.log(evalString)
       if (++responses === requests.length) {
         resolve()
       }

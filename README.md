@@ -7,7 +7,8 @@ A combination of clp-packet and ws-cat. Use it as a debug tool, to talk to clp-f
 
 ```sh
 $ npm install
-$ node ./example
+$ node example
+$ node example2
 ```
 
 # Connecting the frog and the cat

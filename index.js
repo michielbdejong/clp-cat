@@ -1,6 +1,15 @@
 const ClpNode = require('clp-node')
 const ClpPacket = require('clp-packet')
-// const IlpPacket = require('ilp-packet')
+const IlpPacket = require('ilp-packet')
+const chalk = require('chalk')
+
+function bufferToEvalStr(buf) {
+  let byteStrArr = []
+  for (let i = 0; i < buf.length; i++) {
+    byteStrArr.push(buf[i].toString())
+  }
+  return `new Buffer([ ${byteStrArr.join(', ')} ])`
+}
 
 function protocolDataToEvalStr(arr) {
   const mimeStrMap = {
@@ -9,27 +18,38 @@ function protocolDataToEvalStr(arr) {
     2: 'ClpPacket.MIME_APPLICATION_JSON'
   }
   const strArr = arr.map(obj => {
-    let byteStrArr = []
     if (obj.contentType === ClpPacket.MIME_TEXT_PLAIN_UTF8) {
       dataStr = `'${obj.data.toString('ascii')}'`
     } else if (obj.contentType === ClpPacket.MIME_APPLICATION_JSON) {
       dataStr = `JSON.stringify(${JSON.stringify(JSON.parse(obj.data.toString('ascii')), null, 2).split('\n').join('\n    ')})`
+    } else if (obj.protocolName === 'ilp') {
+      dataStr = `IlpPacket.serializeIlpPacket(${JSON.stringify(IlpPacket.deserializeIlpPacket(obj.data), null, 2).split('\n').join('\n    ')})`
     } else {
-      for (let i = 0; i < obj.data.length; i++) {
-        byteStrArr.push(obj.data[i].toString())
-      }
-      dataStr = `new Buffer([ ${byteStrArr.join(', ')} ])`
+      dataStr = bufferToEvalStr(obj.data)
     }
     return `{\n    protocolName: '${obj.protocolName}',\n    contentType: ${mimeStrMap[obj.contentType]},\n    data: ${dataStr}\n  }`
   })
   return `[ ${strArr.join(', ')} ]`
 }
 
-function fieldsToEvalStr(obj) {
+function fieldsToEvalStrs(obj) {
   let ret = []
   for (let name in obj) {
-    ret.push(`${name}: ${obj[name]}`)
+    if (name === 'protocolData') {
+      continue
+    }
+    // binary fields
+    if (['executionCondition', 'fulfillment'].indexOf(name) !== -1) {
+      ret.push(`${name}: ${bufferToEvalStr(obj[name])}`)
+
+    // string fields:
+    } else if (['transferId'].indexOf(name) !== -1) {
+      ret.push(`${name}: '${obj[name]}'`)
+    } else {
+      ret.push(`${name}: ${obj[name]}`)
+    }
   }
+  return ret
 }
 
 function toEvalStr(obj) {
@@ -50,7 +70,7 @@ function toEvalStr(obj) {
     `}\n`
   }
   return `{ \n` +
-    `  type: ${typeStrMap(obj.type)}, \n` +
+    `  type: ${typeStrMap[obj.type]}, \n` +
     `  requestId: ${obj.requestId}, \n` +
     `  data: {\n` +
     `    ${fieldsToEvalStrs(obj.data).join(',\n    ')}\n` +
@@ -60,7 +80,14 @@ function toEvalStr(obj) {
 }
 
 function Cat (config) {
-  this.handlers = {}
+  this.logName = config.clp.name
+  this.handlers = {
+    incoming: [
+      (obj, evalStr) => {
+        console.log(chalk.bold.red(this.logName), chalk.red(evalStr))
+      }
+    ]
+  }
   this.node = new ClpNode(config.clp, (ws) => {
     this.ws = ws
     this.registerWebSocketMessageHandler()
@@ -70,6 +97,7 @@ function Cat (config) {
 Cat.prototype = {
   send (obj) {
     this.ws.send(ClpPacket.serialize(obj))
+    console.log(chalk.bold.green(this.logName), chalk.green(toEvalStr(obj)))
     return Promise.resolve()
   },
 
