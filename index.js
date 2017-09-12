@@ -10,17 +10,17 @@ function protocolDataToEvalStr(arr) {
   }
   const strArr = arr.map(obj => {
     let byteStrArr = []
-    if (obj.contentType === ClpPacket.MIME_APPLICATION_OCTET_STRING) {
+    if (obj.contentType === ClpPacket.MIME_TEXT_PLAIN_UTF8) {
+      dataStr = `'${obj.data.toString('ascii')}'`
+    } else if (obj.contentType === ClpPacket.MIME_APPLICATION_JSON) {
+      dataStr = `JSON.stringify(${JSON.stringify(JSON.parse(obj.data.toString('ascii')), null, 2).split('\n').join('\n    ')})`
+    } else {
       for (let i = 0; i < obj.data.length; i++) {
         byteStrArr.push(obj.data[i].toString())
       }
       dataStr = `new Buffer([ ${byteStrArr.join(', ')} ])`
-    } else if (obj.contentType === ClpPacket.MIME_APPLICATION_OCTET_STRING) {
-      dataStr = `JSON.stringify(${obj.data.toString('ascii')})`
-    } else {
-      dataStr = `'${obj.data.toString('ascii')}'`
     }
-    return `{ protocolName: '${obj.protocolName}', contentType: ${mimeStrMap[obj.contentType]}, data: ${dataStr} }`
+    return `{\n    protocolName: '${obj.protocolName}',\n    contentType: ${mimeStrMap[obj.contentType]},\n    data: ${dataStr}\n  }`
   })
   return `[ ${strArr.join(', ')} ]`
 }
