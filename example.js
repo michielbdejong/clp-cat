@@ -9,10 +9,8 @@ const frog = new Frog({ clp: { version: 1, listen:8000 }, plugin })
 const cat = new Cat({ clp: { version: 1, name: 'alice', upstreams: [ { url: 'ws://localhost:8000/frog/clp/v1', token: 'alice' } ] } })
 
 frog.start().then(() => {
-  console.log('frog started')
   return cat.start()
 }).then(() => {
-  console.log('cat started')
   let responses = 0
   const requests = [
     // {
@@ -77,17 +75,12 @@ frog.start().then(() => {
     })
   })
   return Promise.all(requests.map(request => {
-    console.log('cat sends request', request)
     cat.send(request)
   })).then(() => {
    return gotResponses
   })
 }).then(() => {
-   console.log('sent one message and got one response')
    return frog.stop()
 }).then(() => {
-   console.log('frog stopped')
    return cat.stop()
-}).then(() => {
-   console.log('cat stopped')
 })
