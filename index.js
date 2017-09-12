@@ -84,7 +84,7 @@ function Cat (config) {
   this.handlers = {
     incoming: [
       (obj, evalStr) => {
-        console.log(chalk.bold.red(this.logName), chalk.red(evalStr))
+        console.log(chalk.bold.red(this.logName + ' receives:'), chalk.red(evalStr))
       }
     ]
   }
@@ -97,7 +97,7 @@ function Cat (config) {
 Cat.prototype = {
   send (obj) {
     this.ws.send(ClpPacket.serialize(obj))
-    console.log(chalk.bold.green(this.logName), chalk.green(toEvalStr(obj)))
+    console.log(chalk.bold.green(this.logName + ' sends:'), chalk.green(toEvalStr(obj)))
     return Promise.resolve()
   },
 
