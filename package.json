@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/michielbdejong/clp-cat#readme",
   "devDependencies": {
+    "clp-frog": "github:michielbdejong/clp-frog",
     "ilp-plugin-bells": "^15.1.1"
   }
 }

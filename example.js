@@ -1,5 +1,5 @@
 const Plugin = require('ilp-plugin-bells')
-const Frog = require('../clp-frog')
+const Frog = require('clp-frog')
 const Cat = require('.')
 const ClpPacket = require('clp-packet')
 
