@@ -11,6 +11,11 @@ $ node example
 $ node example2
 ```
 
+## 'example' script screenshot
+<img width="330" alt="screen shot 2017-09-13 at 18 18 01" src="https://user-images.githubusercontent.com/408412/30388429-f6416f18-98af-11e7-8f9e-773d02594a89.png">
+## 'example2' script screenshot
+<img width="615" alt="screen shot 2017-09-13 at 18 18 20" src="https://user-images.githubusercontent.com/408412/30388428-f638004a-98af-11e7-81d4-282cb4995a76.png">
+
 # Connecting the frog and the cat
 
 The example script uses the frog as server and the cat as client:
