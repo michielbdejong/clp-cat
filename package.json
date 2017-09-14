@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "chalk": "^2.1.0",
-    "clp-node": "github:michielbdejong/clp-node",
+    "clp-node": "github:michielbdejong/clp-node#9fb7843",
     "clp-packet": "github:interledgerjs/clp-packet#mj-testnet-1",
     "ilp-packet": "^1.3.0"
   },
